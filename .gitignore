@@ -1,0 +1,8 @@
+# executable program
+*.exe
+
+# object file
+*.o
+
+# input file
+in.txt
