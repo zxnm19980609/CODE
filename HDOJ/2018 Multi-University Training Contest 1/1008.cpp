@@ -32,19 +32,7 @@ int build() {
         int k = top;
         while (k && tree[stk[k - 1]] < tree[i]) --k;
         if (k) tree[stk[k - 1]].right = i;
-        /*
-        {
-            tree[i].pre = stk[k - 1];
-            tree[stk[k - 1]].right = i;
-        }
-        */
         if (k < top) tree[i].left = stk[k];
-        /*
-        {
-            tree[stk[k]].pre = i;
-            tree[i].left = stk[k];
-        }
-        */
         stk[k++] = i;
         top = k;
     }
