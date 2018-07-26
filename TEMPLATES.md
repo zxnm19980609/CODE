@@ -47,3 +47,36 @@ void mergeSort(int a[], int tmp[], int l, int r, int &cnt) {
 
 ```
 
+## 杂项
+
+### 快速读入
+
+```c++
+#include <cstdio>
+/**
+ * @brief 快速读入
+ *
+ * @attention 只能用于读入整数
+ */
+namespace FastIO {
+    inline char nc() {
+        static char buf[100000], *p1 = buf, *p2 = buf;
+        return p1 == p2 && (p2 = (p1 = buf) + fread(buf, 1, 100000, stdin), p1 == p2) ? '@' : *p1++;
+    }
+    int over;
+    inline int nextInt() {
+        char ch = nc();
+        int s = 0;
+        while(!(ch >= '0' && ch <= '9')) {
+            ch = nc();
+            if(ch == '@') { over = 1; break; }
+        }
+        while(ch >= '0' && ch <= '9') {
+            s = s * 10 + ch - 48, ch = nc();
+            if(ch == '@') { over = 1; break; }
+        }
+        return s;
+    }
+}
+```
+
