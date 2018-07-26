@@ -6,3 +6,6 @@
 
 # input file
 in.txt
+
+# vscode configurations folder
+.vscode
