@@ -212,6 +212,7 @@ int build(int n) {
  * @brief 快速读入
  *
  * @attention 只能用于读入整数
+ *            不能和其他任何读入方法同时使用
  */
 namespace FastIO {
     inline char nc() {
@@ -232,5 +233,21 @@ namespace FastIO {
         }
         return s;
     }
+}
+/**
+ * @attention 可以和 scanf() 一起使用
+ */
+inline int read() {
+    char ch = getchar();
+    int x = 0, f = 1;
+    while(ch < '0' || ch > '9') {
+        if(ch == '-') f = -1;
+        ch = getchar();
+    }
+    while('0' <= ch && ch <= '9') {
+        x = x * 10 + ch - '0';
+        ch = getchar();
+    }
+    return x * f;
 }
 ```
