@@ -251,3 +251,24 @@ inline int read() {
     return x * f;
 }
 ```
+
+### GCC 内建函数
+
+```c++
+/**
+ * @brief GCC 内建函数, 高效位运算
+ *        都是在二进制意义下
+ *
+ * @attention 这些函数的 unsigned long long 版本, 就是在
+ *            函数名末尾加上 ll
+ *            e.g. int __builtin_ctzll(unsigned long long n);
+ */
+int __builtin_popcount(unsigned int n); // 返回 '1' 的个数
+int __builtin_parity(unsigned int n);   // 返回 '1' 的奇偶性
+                                        // 1 表示奇数个 '1'
+                                        // 0 表示偶数个 '1'
+int __builtin_ffs(unsigned int n);      // 返回 n 末尾最后一个 '1' 的位置
+int __builtin_ctz(unsigned int n);      // 返回 n 末尾 '0' 的个数
+int __builtin_clz (unsigned int x);     // 返回前导 '0' 的个数
+```
+
