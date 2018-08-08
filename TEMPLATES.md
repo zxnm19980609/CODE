@@ -2,6 +2,14 @@
 
 # 模板
 
+## 计算几何
+
+### 凸包
+
+```c++
+
+```
+
 ## 排序
 
 ### 归并排序
@@ -37,14 +45,6 @@ void mergeSort(int a[], int tmp[], int l, int r, int &cnt) {
             a[fi] = tmp[fi];
 	}
 }
-```
-
-## 计算几何
-
-### 凸包
-
-```c++
-
 ```
 
 ## 图
@@ -197,6 +197,37 @@ int build(int n) {
         top = k;
     }
     return stk[0];
+}
+```
+
+## RMQ
+
+### ST表
+
+```c++
+/**
+ * @brief stMin[i][j] 表示 i 到 i + 2 ^ j - 1 这段区间的最小值
+ *        stMin[i][0] = a[i]
+ *
+ * @attention 卡常数可以考虑预处理 2 ^ i 和 log()
+ */
+#include <cmath>
+#include <algorithm>
+using namespace std;
+const int MAXN = 1e5 + 10;
+int stMin[MAXN][31], stMax[MAXN][31];
+void init(int n) {
+    for(int j = 1; (1 << j) < n; ++j) {
+        for(int i = 0; i + (1 << j) - 1 < n; ++i) {
+            stMin[i][j] = min(stMin[i][j - 1], stMin[i + (1 << (j - 1))][j - 1]);
+            // stMax[i][j] = max(stMax[i][j - 1], stMax[i + (1 << (j - 1))][j - 1]);
+        }
+    }
+}
+int query(int l, int r) {
+    int k = floor(log(r - l + 1) / log(2));
+    return min(stMin[l][k], stMin[r - (1 << k) + 1][k]);
+    // return max(stMax[l][k], stMax[r - (1 << k) + 1][k]);
 }
 ```
 
