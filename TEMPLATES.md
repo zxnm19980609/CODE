@@ -10,6 +10,181 @@
 
 ```
 
+## 数论
+
+### 概念 & 性质
+
+1. **积性函数：**$$ \forall p > 0, q > 0, gcd(p, q) == 1 \quad f(p \cdot q ) = f(p) \cdot f(q) $$
+
+2. **完全积性函数：**$$ \forall p > 0, q > 0, gcd(p, q) == 1 \quad f(p \cdot q ) = f(p) \cdot f(q) $$
+
+3. **常见积性函数：**
+
+   > $$ \varphi(n) $$－欧拉函数
+   >
+   > $$\mu(n)$$－莫比乌斯函数
+   >
+   > $$\lambda(n)$$－刘维尔函数
+   >
+   > $$d(n)$$－n的正因子数目
+   >
+   > $$\sigma(n)$$－n的所有正因子之和
+
+4. $$ a^n - 1 = (a - 1) * (a^{n - 1} + a^{n - 2} + \ldots + a^2 + a + 1$$
+
+5. $$ m \mid n \Rightarrow Fibonacci_m \mid Fibonacci_n $$
+
+6. $$ gcd(Fibonacci_m, Fibonacci_n) = Fibonacci_{gcd(m, n)} $$
+
+7. $$ gcd(2^m - 1, 2^n - 1) = 2^{gcd(m, n)} - 1 $$
+
+8. 
+
+### 快速幂
+
+```c++
+typedef long long LL;
+/**
+ * @return a ^ b % MOD
+ */
+LL quickPow(LL a, LL b, LL MOD) {
+    LL ret = 1LL;
+    while (b) {
+        if (b & 1) ret = ret * a % MOD;
+        a = a * a % MOD;
+        b >>= 1;
+    }
+    return ret;
+}
+```
+
+### 逆元
+
+#### 线性递推阶乘逆元
+
+```c++
+/**
+ * @attention 适用于 MOD 较大的情况
+ *            e.g. MOD == 1e9 + 7 || MOD == 998244353
+ */
+#include <cmath>
+typedef long long LL;
+const int MOD = 998244353;
+const int N = 3e5 + 5;
+LL fac[N + 10], invfac[N + 10];
+LL quickPow(LL a, LL b, LL MOD);
+void init() {
+    fac[0] = 1LL;
+    for (int i = 1; i <= N; ++i) fac[i] = fac[i - 1] * i % MOD;
+    invfac[N] = quickPow(fac[N], MOD - 2, MOD);
+    for (int i = N - 1; ~i; --i)
+        invfac[i] = invfac[i + 1] * (i + 1) % MOD;
+}
+```
+
+### 组合数
+
+#### 杨辉三角
+
+```c++
+typedef long long LL;
+const int MOD = 1e9 + 7;
+const int N = 1005;
+LL C[N + 10][N + 10];
+void init(int n) {
+    C[0][0] = 1;
+    for(int i = 1; i < n; ++i) {
+        C[i][0] = 1;
+        for(int j = 1; j < i; ++j)
+            C[i][j] = (C[i - 1][j - 1] + C[i - 1][j]) % MOD;
+        C[i][i] = 1;
+    }
+}
+LL getC(int a, int b) {
+    if(b > a) return 0;
+    return C[a][b];
+}
+```
+
+#### $ \dbinom n r = \dfrac{n!}{r!(n-r)!} $ 
+
+```c++
+typedef long long LL;
+const int MOD = 998244353;
+const int N = 3e5 + 5;
+LL fac[N + 10];    // n!
+LL invfac[N + 10]; // (n!) ^ (-1)
+LL getC(LL a, LL b) {
+    if (b > a) return 0;
+    return fac[a] * invfac[b] % MOD * invfac[a - b] % MOD;
+}
+```
+
+#### Lucas定理
+
+```c++
+/**
+ * @attention 适用于 a, b < 1e18, MOD < 1e5 的情况
+ */
+typedef long long LL;
+const int MOD = 1e5 + 7;
+LL getC(int a, int b);
+LL Lucas(LL a, LL b) {
+    if(a < MOD && b < MOD) return getC(a, b);
+    return getC(a % MOD, b % MOD) * Lucas(a / MOD, b / MOD);
+}
+```
+
+### 欧拉定理
+
+#### 定理 & 性质
+
+若 $$ n, a $$ 为正整数，且 $$ n, a $$ 互质，则：
+$$
+a^{\varphi(n)} \equiv 1 \pmod p
+$$
+ 
+
+## 莫比乌斯反演
+
+#### 定理 & 性质
+
+1. 
+
+2. **莫比乌斯反演定理：**
+
+   > $$ F(n) $$ 和 $$ f(n) $$ 是定义在非负整数集合上的两个函数，并且满足条件： 
+   > $$
+   > F(n) = \sum \limits_{d \mid n} f(d)
+   > $$
+   > 那么存在一个结论：
+   > $$
+   > f(n) = \sum \limits_{d \mid n} \mu(d)F(\dfrac{n}{d})
+   > $$
+   >
+
+   > 莫比乌斯反演有另外的一种形式，当 $$ F(n) $$ 和 $$ f(n) $$ 满足：
+   > $$
+   > F(n) = \sum \limits_{d \mid n} f(d)
+   > $$
+   > 可以推出：
+   > $$
+   > f(n) = \sum \limits_{n \mid d} \mu(\dfrac{d}{n})F(d)
+   > $$
+   >
+
+3. fff
+
+4. $$ \sum \limits_{d \mid n} \mu(d) = \left[ n = 1 \right]$$
+
+5. $$ \sum \limits_{d \mid n} \dfrac{\mu(d)}{d} = \dfrac{\varphi(n)}{n} $$ 
+
+#### 线性筛 $ \mu(d) $
+
+```c++
+
+```
+
 ## 排序
 
 ### 归并排序
@@ -240,8 +415,6 @@ int query(int l, int r) {
 ```c++
 #include <cstdio>
 /**
- * @brief 快速读入
- *
  * @attention 只能用于读入整数
  *            不能和其他任何读入方法同时使用
  */
