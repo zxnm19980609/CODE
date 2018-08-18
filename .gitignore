@@ -4,8 +4,10 @@
 # object file
 *.o
 
-# input file
+# input or output file
 in.txt
+*.in
+*.out
 
 # vscode configurations folder
 .vscode
