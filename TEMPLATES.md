@@ -30,15 +30,25 @@
    >
    > $$\sigma(n)$$－n的所有正因子之和
 
-4. $$ a^n - 1 = (a - 1) * (a^{n - 1} + a^{n - 2} + \ldots + a^2 + a + 1$$
+4. **常见完全积性函数：**
 
-5. $$ m \mid n \Rightarrow Fibonacci_m \mid Fibonacci_n $$
+   > $$ e(n) $$－元函数 $$ e(n) = \left[ n = 1\right] $$
+   >
+   > $$I(n)$$－恒等函数 $$ I(n) = 1 $$
+   >
+   > $$id(n)$$－单位函数 $$ id(n) = n $$
 
-6. $$ gcd(Fibonacci_m, Fibonacci_n) = Fibonacci_{gcd(m, n)} $$
+5. 积性函数 * 积性函数 = 积性函数
 
-7. $$ gcd(2^m - 1, 2^n - 1) = 2^{gcd(m, n)} - 1 $$
+6. $$ a^n - 1 = (a - 1) * (a^{n - 1} + a^{n - 2} + \ldots + a^2 + a + 1$$
 
-8. 
+7. $$ m \mid n \Rightarrow Fibonacci_m \mid Fibonacci_n $$
+
+8. $$ gcd(Fibonacci_m, Fibonacci_n) = Fibonacci_{gcd(m, n)} $$
+
+9. $$ gcd(2^m - 1, 2^n - 1) = 2^{gcd(m, n)} - 1 $$
+
+10. 
 
 ### 快速幂
 
@@ -143,7 +153,7 @@ LL Lucas(LL a, LL b) {
 $$
 a^{\varphi(n)} \equiv 1 \pmod p
 $$
- 
+
 
 ## 莫比乌斯反演
 
@@ -392,15 +402,14 @@ using namespace std;
 const int MAXN = 1e5 + 10;
 int stMin[MAXN][31], stMax[MAXN][31];
 void init(int n) {
-    for(int j = 1; (1 << j) < n; ++j) {
+    for(int j = 1; (1 << j) < n; ++j)
         for(int i = 0; i + (1 << j) - 1 < n; ++i) {
             stMin[i][j] = min(stMin[i][j - 1], stMin[i + (1 << (j - 1))][j - 1]);
             // stMax[i][j] = max(stMax[i][j - 1], stMax[i + (1 << (j - 1))][j - 1]);
         }
-    }
 }
 int query(int l, int r) {
-    int k = floor(log(r - l + 1) / log(2));
+	int k = floor(log2(r - l + 1));
     return min(stMin[l][k], stMin[r - (1 << k) + 1][k]);
     // return max(stMax[l][k], stMax[r - (1 << k) + 1][k]);
 }
