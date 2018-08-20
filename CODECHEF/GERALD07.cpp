@@ -8,7 +8,7 @@ public:
     int l, r, blockNo, id;
 }qst[MAX];
 int n, m, q, BLOCK, ans[MAX], ansK, ansKP1;
-int faKP1[MAX], faK[MAX], tf[MAX];
+int faKP1[MAX], faK[MAX];
 pair<int, int> edge[MAX];
 void initFather(int father[]) {
     for (int i = 1; i <= n; ++i)
