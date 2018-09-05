@@ -189,6 +189,8 @@ $$
 
 5. $$ \sum \limits_{d \mid n} \dfrac{\mu(d)}{d} = \dfrac{\varphi(n)}{n} $$ 
 
+### $ \lfloor \frac{n}{d} \rfloor $ 分块
+
 #### 线性筛 $ \mu(d) $
 
 ```c++
@@ -229,6 +231,53 @@ void mergeSort(int a[], int tmp[], int l, int r, int &cnt) {
         for (int fi = l; fi <= r; ++fi)
             a[fi] = tmp[fi];
 	}
+}
+```
+
+## 矩阵快速幂
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long LL;
+const int MAX = 150;
+LL MOD;
+class Matrix {
+public:
+    int r, c;
+    LL mat[MAX][MAX];
+    Matrix() {
+        r = c = 0;
+        memset(mat, 0, sizeof mat);
+    }
+    Matrix(int n) : r(n), c(n) {
+        memset(mat, 0, sizeof mat);
+    }
+    Matrix(int r, int c) : r(r), c(c) {
+        memset(mat, 0, sizeof mat);
+    }
+    LL* operator[](int r) {
+        return mat[r];
+    }
+    Matrix operator*(Matrix b) {
+        Matrix ret(r, b.c);
+        for (int i = 0; i < r; ++i)
+            for (int k = 0; k < c; ++k)
+            for (int j = 0; j < b.c; ++j)
+                ret[i][j] = (ret[i][j] + mat[i][k] * b[k][j]) % MOD;
+        return ret;
+    }
+};
+Matrix fastPow(Matrix a, LL b) {
+    Matrix ret(a.r, a.c);
+    for (int i = 0; i < ret.r; ++i)
+        ret[i][i] = 1;
+    while (b) {
+        if (b & 1) ret = ret * a;
+        a = a * a;
+        b >>= 1;
+    }
+    return ret;
 }
 ```
 
