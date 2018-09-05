@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-const int MAXN = 200005;
+const int MAXN = 100005;
 const int MAXM = 400005;
 class Edge {
 public:
@@ -42,7 +42,7 @@ int spfa() {
                     q.push(v);
                 }
             }
-            else if (dis[v] == dis[u] + w && w == 1) {
+            else if (dis[v] == dis[u] + w && last[v].find(edge[p].type) == last[v].end()) {
                 last[v].insert(edge[p].type);
                 if (!vis[v]) {
                     vis[v] = true;
