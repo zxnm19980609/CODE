@@ -24,7 +24,7 @@ public:
     LL* operator[](int r) {
         return mat[r];
     }
-    Matrix operator*(Matrix &b) {
+    Matrix operator*(Matrix b) {
         Matrix ret(r, b.c);
         for (int i = 0; i < r; ++i)
             for (int k = 0; k < c; ++k)
