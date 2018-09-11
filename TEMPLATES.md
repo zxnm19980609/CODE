@@ -191,6 +191,14 @@ $$
 
 ### $ \lfloor \frac{n}{d} \rfloor $ 分块
 
+```c++
+int n, cnt, last;
+for (int i = 1; i <= n; i = last + 1) {
+    last = n / (n / i);
+    cnt = last - i + 1;
+}
+```
+
 #### 线性筛 $ \mu(d) $
 
 ```c++
