@@ -1,46 +1,44 @@
 [TOC]
 
-# 模板
+# 计算几何
 
-## 计算几何
-
-### 凸包
+## 凸包
 
 ```c++
 
 ```
 
-## 数论
+# 数论
 
-### 概念 & 性质
+## 概念 & 性质
 
-1. **积性函数：**$$ \forall p > 0, q > 0, gcd(p, q) == 1 \quad f(p \cdot q ) = f(p) \cdot f(q) $$
+1. **积性函数：** $$ \forall p > 0, q > 0, gcd(p, q) == 1 \quad f(p \cdot q ) = f(p) \cdot f(q) $$
 
-2. **完全积性函数：**$$ \forall p > 0, q > 0, gcd(p, q) == 1 \quad f(p \cdot q ) = f(p) \cdot f(q) $$
+2. **完全积性函数：** $$ \forall p > 0, q > 0, gcd(p, q) == 1 \quad f(p \cdot q ) = f(p) \cdot f(q) $$
 
 3. **常见积性函数：**
 
    > $$ \varphi(n) $$－欧拉函数
    >
-   > $$\mu(n)$$－莫比乌斯函数
+   > $$ \mu(n) $$－莫比乌斯函数
    >
-   > $$\lambda(n)$$－刘维尔函数
+   > $$ \lambda(n) $$－刘维尔函数
    >
-   > $$d(n)$$－n的正因子数目
+   > $$ d(n) $$－n的正因子数目
    >
-   > $$\sigma(n)$$－n的所有正因子之和
+   > $$ \sigma(n) $$－n的所有正因子之和
 
 4. **常见完全积性函数：**
 
    > $$ e(n) $$－元函数 $$ e(n) = \left[ n = 1\right] $$
    >
-   > $$I(n)$$－恒等函数 $$ I(n) = 1 $$
+   > $$ I(n) $$－恒等函数 $$ I(n) = 1 $$
    >
-   > $$id(n)$$－单位函数 $$ id(n) = n $$
+   > $$ id(n) $$－单位函数 $$ id(n) = n $$
 
 5. 积性函数 * 积性函数 = 积性函数
 
-6. $$ a^n - 1 = (a - 1) * (a^{n - 1} + a^{n - 2} + \ldots + a^2 + a + 1$$
+6. $$ a^n - 1 = (a - 1) * (a^{n - 1} + a^{n - 2} + \ldots + a^2 + a + 1 $$
 
 7. $$ m \mid n \Rightarrow Fibonacci_m \mid Fibonacci_n $$
 
@@ -48,9 +46,8 @@
 
 9. $$ gcd(2^m - 1, 2^n - 1) = 2^{gcd(m, n)} - 1 $$
 
-10. 
 
-### 快速幂
+## 快速幂
 
 ```c++
 typedef long long LL;
@@ -68,16 +65,16 @@ LL quickPow(LL a, LL b, LL MOD) {
 }
 ```
 
-### 逆元
+## 逆元
 
-#### 线性递推阶乘逆元
+### 线性递推阶乘逆元
 
 ```c++
 /**
  * @attention 适用于 MOD 较大的情况
  *            e.g. MOD == 1e9 + 7 || MOD == 998244353
  */
-#include <cmath>
+#include <bits/stdc++.h>
 typedef long long LL;
 const int MOD = 998244353;
 const int N = 3e5 + 5;
@@ -92,9 +89,9 @@ void init() {
 }
 ```
 
-### 组合数
+## 组合数
 
-#### 杨辉三角
+### 杨辉三角
 
 ```c++
 typedef long long LL;
@@ -116,7 +113,7 @@ LL getC(int a, int b) {
 }
 ```
 
-#### $ \dbinom n r = \dfrac{n!}{r!(n-r)!} $ 
+### $ \dbinom n r = \dfrac{n!}{r!(n-r)!} $
 
 ```c++
 typedef long long LL;
@@ -130,7 +127,7 @@ LL getC(LL a, LL b) {
 }
 ```
 
-#### Lucas定理
+### Lucas定理
 
 ```c++
 /**
@@ -145,23 +142,58 @@ LL Lucas(LL a, LL b) {
 }
 ```
 
-### 欧拉定理
+## 欧拉定理
 
-#### 定理 & 性质
+### 定理 & 性质
 
-若 $$ n, a $$ 为正整数，且 $$ n, a $$ 互质，则：
+1. 若 $$ n, a $$ 为正整数，且 $ n, a $ 互质，则：
+
 $$
-a^{\varphi(n)} \equiv 1 \pmod p
+a^{\varphi(n)} \equiv 1 \pmod n
 $$
 
+2. $$ \varphi(p^a) = (p - 1) * p^{a - 1} $$
+
+### 线性筛 $ \varphi(n) $
+
+```c++
+/**
+ * phi[p] = p - 1, p is prime.
+ * phi[p * i] = p * phi[i], p is prime && p % i == 0.
+ * phi[p * i] = (p - 1) * phi[i], p is prime && p % i != 0.
+ */
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100010;
+int phi[N + 5], prime[N + 5];
+bool isprime[N + 5];
+void init() {
+    memset(isprime, 1, sizeof isprime);
+    int cnt = 0;
+    phi[1] = 1;
+    for(int i = 2; i <= N; ++i) {
+        if(isprime[i]) {
+            prime[++cnt] = i;
+            phi[i] = i - 1;
+        }
+        for(int j = 1; j <= cnt && prime[j] * i <= N; ++j){
+            isprime[prime[j] * i] = false;
+            if(i % prime[j] == 0) {
+                phi[prime[j] * i] = prime[j] * phi[i];
+                break;
+            }
+            else
+                phi[prime[j] * i] = (prime[j] - 1) * phi[i];
+        }
+    }
+}
+```
 
 ## 莫比乌斯反演
 
-#### 定理 & 性质
+### 定理 & 性质
 
-1. 
-
-2. **莫比乌斯反演定理：**
+1. **莫比乌斯反演定理：**
 
    > $$ F(n) $$ 和 $$ f(n) $$ 是定义在非负整数集合上的两个函数，并且满足条件： 
    > $$
@@ -183,21 +215,42 @@ $$
    > $$
    >
 
-3. fff
+2. $$ \sum \limits_{d \mid n} \mu(d) = \left[ n = 1 \right]$$
 
-4. $$ \sum \limits_{d \mid n} \mu(d) = \left[ n = 1 \right]$$
+3. $$ \sum \limits_{d \mid n} \dfrac{\mu(d)}{d} = \dfrac{\varphi(n)}{n} $$ 
 
-5. $$ \sum \limits_{d \mid n} \dfrac{\mu(d)}{d} = \dfrac{\varphi(n)}{n} $$ 
-
-#### 线性筛 $ \mu(d) $
+### 线性筛 $ \mu(d) $
 
 ```c++
-
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100010;
+int mu[N + 5], prime[N + 5];
+bool isprime[N + 5];
+void Mobius() {
+    memset(isprime, 1, sizeof isprime);
+    int cnt = 0;
+    mu[1] = 1;
+    isprime[0] = isprime[1] = false;
+    for (int i = 2; i <= N; ++i) {
+        if (isprime[i]) {
+            prime[++cnt] = i;
+            mu[i] = -1;
+        }
+        for (int j = 1; j <= cnt && prime[j] * i <= N; ++j) {
+            isprime[prime[j] * i] = false;
+            if (i % prime[j] == 0)
+                break;
+            else
+                mu[prime[j] * i] = -mu[i];
+        }
+    }
+}
 ```
 
-## 排序
+# 排序
 
-### 归并排序
+## 归并排序
 
 ```c++
 /**
@@ -232,11 +285,137 @@ void mergeSort(int a[], int tmp[], int l, int r, int &cnt) {
 }
 ```
 
-## 图
+# 图
 
-### 网络流
+## 拓扑排序
 
-1. 
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+const int MAXN = 1010;
+int n;                  // 点数
+int indeg[MAXN];        // 入度
+vector<int> edge[MAXN]; // 边集
+queue<int> Q;
+/**
+ * @brief 有向图拓扑排序判环
+ */
+bool topoSort() {
+    int cnt = 0;
+    while (!Q.empty()) Q.pop();
+    for (int i = 1; i <= n; ++i)
+        if (indeg[i] == 0) {
+            ++cnt;
+            Q.push(i);
+        }
+    while (!Q.empty()) {
+        int p = Q.front();
+        Q.pop();
+        for (int i = 0; i < (int)edge[p].size(); ++i)
+            if (--indeg[edge[p][i]] == 0) {
+                ++cnt;
+                Q.push(edge[p][i]);
+            }
+    }
+    if (cnt == n)
+        return true;
+    else
+        return false;
+}
+```
+
+## Tarjan - 强连通分量
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+const int MAXN = 1010;
+const int MAXM = 10010;
+class CEdge {
+public:
+    int x, next;
+};
+bool vis[MAXN];
+int n, m, timestamp, color, cnt;
+int h[MAXN], dfn[MAXN], low[MAXN], belong[MAXN];
+CEdge edge[MAXM];
+stack<int> s;
+vector<int> G[MAXN];
+void addEdge(int u,int v) {
+    ++cnt;
+    edge[cnt].x = v;
+    edge[cnt].next = h[u];
+    h[u] = cnt;
+}
+/**
+ * @attention 注意多测时需要初始化的数组！
+ */
+void init() {
+    while (!s.empty()) s.pop();
+    cnt = 0;
+    memset(h, 0, sizeof h);
+    memset(vis, 0, sizeof vis);
+    memset(dfn, 0, sizeof dfn);
+    memset(low, 0, sizeof low);
+    timestamp = 0; color = 0;
+    memset(belong, 0, sizeof belong);
+    scanf("%d%d", &n, &m);
+    int u, v;
+    for (int i = 0; i < m; ++i) {
+        scanf("%d%d", &u, &v);
+        addEdge(u, v);
+    }
+}
+void tarjan(int u) {
+    int v;
+    dfn[u] = low[u] = ++timestamp;
+    s.push(u); vis[u] = true;
+    for (int p = h[u]; p; p = edge[p].next) {
+        v = edge[p].x;
+        if (!dfn[v]) {
+            tarjan(v);
+            low[u] = min(low[u], low[v]);
+        }
+        else if (vis[v]) low[u] = min(low[u], dfn[v]);
+    }
+    if (low[u] == dfn[u]) {
+        ++color;
+        do {
+            v = s.top();
+            s.pop();
+            vis[v] = false;
+            belong[v] = color;
+        } while (u != v);
+    }
+}
+/**
+ * @brief 强连通分量缩点
+ *
+ * @attention u, v 之间有边且 belong[u] != belong[v] 时,
+ *            建一条 u -> v 的边
+ */
+void build() {
+    for (int i = 1; i <= color; ++i) G[i].clear();
+    for (int i = 1; i <= n; ++i)
+        for (int p = h[i]; p; p = edge[p].next)
+            if (belong[i] != belong[edge[p].x])
+                G[belong[i]].push_back(belong[edge[p].x]);
+}
+int main() {
+    // freopen("in.txt", "r", stdin);
+    int T;
+    scanf("%d" ,&T);
+    while (T--) {
+        init();
+        for (int i = 1; i <= n; ++i)
+            if (!dfn[i]) tarjan(i);
+        build();
+    }
+    return 0;
+}
+```
+
+## 网络流
 
 ### 最大流
 
@@ -245,10 +424,7 @@ void mergeSort(int a[], int tmp[], int l, int r, int &cnt) {
  * @attention 有向图反向边初始流量为 0
  *            无向图反向边初始流量为 w
  */
-#include <cstdio>
-#include <cstring>
-#include <algorithm>
-#include <queue>
+#include <bits/stdc++.h>
 using namespace std;
 const int MAXN = 100010;
 const int MAXM = 100010;
@@ -268,7 +444,7 @@ void addEdge(int u, int v, int w) {
 }
 bool bfs(int s, int t) {
     int u, v;
-    memset(dis + 1, -1, MEMORY_SIZE);
+    memset(dis, -1, MEMORY_SIZE);
     Q.push(s);
     dis[s] = 0;
     while (!Q.empty()) {
@@ -303,7 +479,7 @@ int dfs(int u, int t, int cap) {
 int dinic(int s, int t) {
     int ans = 0;
     while (bfs(s, t)) {
-        memcpy(cur + 1, h + 1, MEMORY_SIZE);
+        memcpy(cur, h, MEMORY_SIZE);
         ans += dfs(s, t, INF);
     }
     return ans;
@@ -314,9 +490,9 @@ int main() {
     for (scanf("%d", &_); _; --_) {
         scanf("%d%d", &n, &m);
 		scanf("%d%d", &S, &T);
-        MEMORY_SIZE = n * sizeof(int);
+        MEMORY_SIZE = (n + 1) * sizeof(int);
         cnt = 0;
-        memset(h + 1, -1, MEMORY_SIZE);
+        memset(h, -1, MEMORY_SIZE);
         for (int u, v, w, i = 0; i < m; ++i) {
             scanf("%d%d%d", &u, &v, &w);
             addEdge(u, v, w);
@@ -328,11 +504,175 @@ int main() {
 }
 ```
 
+### 最小费用最大流
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+const int MAXN = 100005;
+const int MAXE = 1000005;
+const int INF = 0x3F3F3F3F;
+class Edge {
+public:
+    int to, next, cap, flow, cost;
+}edge[MAXE];
+int h[MAXN], pre[MAXN], dis[MAXN];
+int n, m, MEMORY_SIZE, St, Ed, cnt;
+bool vis[MAXN];
+void addEdge(int u, int v, int cap, int cost) {
+    edge[cnt].to = v;
+    edge[cnt].cap = cap;
+    edge[cnt].cost = cost;
+    edge[cnt].flow = 0;
+    edge[cnt].next = h[u];
+    h[u] = cnt++;
+    edge[cnt].to = u;
+    edge[cnt].cap = 0;
+    edge[cnt].cost = -cost;
+    edge[cnt].flow = 0;
+    edge[cnt].next = h[v];
+    h[v] = cnt++;
+}
+bool SPFA() {
+    queue<int> Q;
+    memset(dis, 0x3F, MEMORY_SIZE);
+    memset(vis, 0, MEMORY_SIZE);
+    memset(pre, -1, MEMORY_SIZE);
+    dis[St] = 0;
+    vis[St] = true;
+    Q.push(St);
+    while (!Q.empty()) {
+        int u = Q.front();
+        Q.pop();
+        vis[u] = false;
+        for (int i = h[u]; ~i; i = edge[i].next) {
+            int v = edge[i].to;
+            if (edge[i].cap > edge[i].flow && dis[v] > dis[u] + edge[i].cost) {
+                dis[v] = dis[u] + edge[i].cost;
+                pre[v] = i;
+                if (!vis[v]) {
+                    vis[v] = true;
+                    Q.push(v);
+                }
+            }
+        }
+    }
+    return pre[Ed] != -1;
+}
+int MCMF(int &cost) {
+    int flow = 0;
+    cost = 0;
+    while (SPFA()) {
+        int Min = INF;
+        for (int i = pre[Ed]; ~i; i = pre[edge[i ^ 1].to]) {
+            if (Min > edge[i].cap - edge[i].flow)
+                Min = edge[i].cap - edge[i].flow;
+        }
+        for (int i = pre[Ed]; ~i; i = pre[edge[i ^ 1].to]) {
+            edge[i].flow += Min;
+            edge[i ^ 1].flow -= Min;
+            cost += edge[i].cost * Min;
+        }
+        flow += Min;
+    }
+    return flow;
+}
+int main() {
+    // freopen("in.txt", "r", stdin);
+    scanf("%d%d", &n, &m);
+    cnt = 0;
+    MEMORY_SIZE = (n + 1) * sizeof(int);
+    memset(h, -1, MEMORY_SIZE);
+    for (int u, v, cap, cost, i = 0; i < m; ++i) {
+        scanf("%d%d%d%d", &u, &v, &cap, &cost);
+        addEdge(u, v, cap, cost);
+    }
+    St = 1;
+    Ed = n;
+    int cost;
+    int flow = MCMF(cost);
+    printf("%d %d\n", flow, cost);
+    return 0;
+}
+```
 
 
-## 树
 
-### 笛卡尔树
+# 树
+
+## 主席树
+
+```c++
+/**
+ * 主席树: 可持久化线段树
+ *        对于原序列 [1...n] 的每一个前缀 [1...i] 建立一棵线段树,
+ *        第 i 棵线段树维护前缀 [1...i] 中属于 [L...R] 的数字的个数
+ *
+ * @brief 主席树解决静态区间第 K 大
+ *
+ * @attention 注意数组大小, 20 - 50 倍 MAXN 即可
+ *            对原序列进行离散化后再建树
+ */
+#include <bits/stdc++.h>
+using namespace std;
+const int MAXN = 1e5 + 10;
+int n, q, m, cnt;
+int a[MAXN], b[MAXN], root[MAXN * 20], lson[MAXN * 20], rson[MAXN * 20], sum[MAXN * 20];
+void build(int& p, int l, int r) {
+    p = ++cnt;
+    sum[p] = 0;
+    if (l == r) return;
+    int mid = (l + r) >> 1;
+    build(lson[p], l, mid);
+    build(rson[p], mid + 1, r);
+}
+void update(int& p, int l, int r, int last, int k) {
+    p = ++cnt;
+    lson[p] = lson[last];
+    rson[p] = rson[last];
+    sum[p] = sum[last] + 1;
+    if (l == r) return;
+    int mid = (l + r) >> 1;
+    if (k <= mid)
+        update(lson[p], l, mid, lson[last], k);
+    else
+        update(rson[p], mid + 1, r, rson[last], k);
+}
+int query(int ss, int tt,int l, int r, int k) {
+    if (l == r) return l;
+    int mid = (l + r) >> 1;
+    int cnt = sum[lson[tt]] - sum[lson[ss]];
+    if (k <= cnt)
+        return query(lson[ss], lson[tt], l, mid, k);
+    else
+        return query(rson[ss], rson[tt], mid + 1, r, k - cnt);
+}
+inline void solve() {
+    int ql, qr, x;
+    scanf("%d%d%d", &ql, &qr, &x);
+    int ans = query(root[ql - 1], root[qr], 1, m, x);
+    printf("%d\n", b[ans]);
+}
+int main() {
+    // freopen("in.txt", "r", stdin);
+    int T;
+    scanf("%d", &T);
+    while (T--) {
+        scanf("%d%d", &n, &q);
+        for (int i = 1; i <=n; ++i) scanf("%d", &a[i]), b[i] = a[i];
+        sort(b + 1, b + n + 1);
+        m = unique(b + 1, b + n + 1) - (b + 1);
+        cnt = 0;
+        build(root[0], 1, m);
+        for (int i = 1; i <= n; ++i) a[i] = lower_bound(b + 1, b + m + 1, a[i]) - b;
+        for (int i = 1; i <= n; ++i) update(root[i], 1, m, root[i - 1], a[i]);
+        while (q--) solve();
+    }
+    return 0;
+}
+```
+
+## 笛卡尔树
 
 ```c++
 const int MAXN = 1e6 + 10;
@@ -385,9 +725,9 @@ int build(int n) {
 }
 ```
 
-## RMQ
+# RMQ
 
-### ST表
+## ST表
 
 ```c++
 /**
@@ -396,8 +736,7 @@ int build(int n) {
  *
  * @attention 卡常数可以考虑预处理 2 ^ i 和 log()
  */
-#include <cmath>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 const int MAXN = 1e5 + 10;
 int stMin[MAXN][31], stMax[MAXN][31];
@@ -417,12 +756,12 @@ int query(int l, int r) {
 
 
 
-## 杂项
+# 杂项
 
-### 快速读入
+## 快速读入
 
 ```c++
-#include <cstdio>
+#include <bits/stdc++.h>
 /**
  * @attention 只能用于读入整数
  *            不能和其他任何读入方法同时使用
@@ -465,7 +804,7 @@ inline int read() {
 }
 ```
 
-### GCC 内建函数
+## GCC 内建函数
 
 ```c++
 /**
@@ -483,5 +822,104 @@ int __builtin_parity(unsigned int n);   // 返回 '1' 的奇偶性
 int __builtin_ffs(unsigned int n);      // 返回 n 末尾最后一个 '1' 的位置
 int __builtin_ctz(unsigned int n);      // 返回 n 末尾 '0' 的个数
 int __builtin_clz (unsigned int x);     // 返回前导 '0' 的个数
+```
+
+## 线性递推式
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long LL;
+const LL MOD = 1e9 + 7;
+LL quickPow(LL a, LL b) {
+    LL ret = 1LL;
+    while (b) {
+        if (b & 1) ret = ret * a % MOD;
+        a = a * a % MOD;
+        b >>= 1;
+    }
+    return ret;
+}
+namespace linear_seq {
+const int N = 10010;
+LL res[N], base[N], _c[N], _md[N];
+vector<int> Md;
+void mul(LL *a, LL *b, int k) {
+    for (int i = 0; i < k + k; ++i) _c[i] = 0;
+    for (int i = 0; i < k; ++i)
+        if (a[i]) {
+            for (int j = 0; j < k ; ++j)
+                _c[i + j] = (_c[i + j] + a[i] * b[j]) % MOD;
+        }
+    for (int i = k + k - 1; i >= k; --i)
+        if (_c[i]) {
+            for (int j = 0; j < (int)Md.size(); ++j)
+                _c[i - k + Md[j]] = (_c[i - k + Md[j]] - _c[i] * _md[Md[j]]) % MOD;
+        }
+    for (int i = 0; i < k; ++i) a[i] = _c[i];
+}
+int solve(LL n, vector<int> a, vector<int> b) {
+    LL ans = 0, pnt = 0;
+    int k = (int)a.size();
+    for (int i = 0; i < k; ++i)
+        _md[k - 1 - i] = -a[i];
+    _md[k] = 1;
+    Md.clear();
+    for (int i = 0; i < k; ++i)
+        if (_md[i] != 0) Md.push_back(i);
+    for (int i = 0; i < k; ++i)
+        res[i] = base[i] = 0;
+    res[0] = 1;
+    while ((1ll << pnt) <= n) pnt++;
+    for (int p = pnt; p >= 0; p--) {
+        mul(res, res, k);
+        if ((n >> p) & 1) {
+            for (int i = k - 1; i >= 0; i--)
+                res[i + 1] = res[i];
+            res[0] = 0;
+            for (int j = 0; j < (int)Md.size(); ++j)
+                res[Md[j]] = (res[Md[j]] - res[k] * _md[Md[j]]) % MOD;
+        }
+    }
+    for (int i = 0; i < k; ++i)
+        ans = (ans + res[i] * b[i]) % MOD;
+    if (ans < 0) ans += MOD;
+    return ans;
+}
+vector<int> BM(vector<int> s) {
+    vector<int> C(1, 1), B(1, 1);
+    int L = 0, m = 1, b = 1;
+    for (int n = 0; n < (int)s.size(); ++n) {
+        LL d = 0;
+        for (int i = 0; i <= L; ++i)
+            d = (d + (LL)C[i] * s[n - i]) % MOD;
+        if (d == 0) ++m;
+        else if (2 * L <= n) {
+            vector<int> T = C;
+            LL c = MOD - d * quickPow(b, MOD - 2) % MOD;
+            while ((int)C.size() < (int)B.size() + m) C.push_back(0);
+            for (int i = 0; i < (int)B.size(); ++i)
+                C[i + m] = (C[i + m] + c * B[i]) % MOD;
+            L = n + 1 - L; m = 1;
+            B = T; b = d;
+        }
+        else {
+            LL c = MOD - d * quickPow(b, MOD - 2) % MOD;
+            while ((int)C.size() < (int)B.size() + m) C.push_back(0);
+            for (int i = 0; i < (int)B.size(); ++i)
+                C[i + m] = (C[i + m] + c * B[i]) % MOD;
+            ++m;
+        }
+    }
+    return C;
+}
+int gao(vector<int> a, LL n) {
+    vector<int> c = BM(a);
+    c.erase(c.begin());
+    for (int i = 0; i < (int)c.size(); ++i)
+        c[i] = (MOD - c[i]) % MOD;
+    return solve(n, c, vector<int>(a.begin(), a.begin() + (int)c.size()));
+}
+}; // namespace linear_seq
 ```
 
