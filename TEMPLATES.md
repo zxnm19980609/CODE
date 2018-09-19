@@ -339,6 +339,294 @@ void mergeSort(int a[], int tmp[], int l, int r, int &cnt) {
 }
 ```
 
+# 字符串
+
+## 回文树
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+/**
+  * 回文树 / 回文自动机
+  *  pt[0] 连接了长度为偶数的回文子串
+  *  pt[1] 连接了长度为奇数的回文子串
+  */
+namespace PalindromeTree {
+    const int CHAR = 26;        // 字符集大小
+    const int MAXL = 2000005;   // 字符串长度
+    class PTNode {
+    public:
+        int cnt;        // 当前状态代表的回文子串的出现次数
+        int len;        // 当前状态代表的回文子串的长度
+        int fail;       // 失配后跳转到的不等于自身的最长后缀回文子串
+        int right;      // 以当前状态代表的回文子串最后一个字符结尾的本质不同的回文子串的数量
+        int next[CHAR]; // 当前状态代表的回文子串两侧添加字符 c 后得到的回文子串的状态
+        void clear() {
+            cnt = len = fail = right = 0;
+            memset(next, 0, sizeof next);
+        }
+    }pt[MAXL];
+    char str[MAXL];
+    int num, suf;
+    int newNode() {
+        int cur = num++;
+        pt[cur].clear();
+        return cur;
+    }
+    void init() {
+        num = 0;
+        int p = newNode();
+        pt[p].len = 0;
+        p = pt[p].fail = newNode();
+        pt[p].len = -1;
+        pt[p].fail = p;
+        suf = 0;
+    }
+    int getFail(int x, int l) {
+        while (str[l - 1 - pt[x].len] != str[l])
+            x = pt[x].fail;
+        return x;
+    }
+    int extend(int x) {
+        int c = str[x] - 'a';
+        int p = getFail(suf, x);
+        if (!pt[p].next[c]) {
+            int q = newNode();
+            pt[q].len = pt[p].len + 2;
+            pt[q].fail = pt[getFail(pt[p].fail, x)].next[c];
+            pt[q].right = pt[pt[q].fail].right + 1;
+            pt[p].next[c] = q;
+        }
+        p = pt[p].next[c];
+        ++pt[p].cnt;
+        return suf = p;
+    }
+    void calc() {
+        for (int i = num - 1; ~i; --i)
+            pt[pt[i].fail].cnt += pt[i].cnt;
+    }
+    void build() {
+        scanf("%s", str);
+        for (int i = 0; str[i]; ++i)
+            extend(i);
+    }
+}
+```
+
+## 后缀数组
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+/**
+ * @attention 注意数组有效值的下标范围
+ *            待排序数组长度为 n, 放在 0 到 n - 1 中, 在最后补 0 (小于字符集中的任何一个字符)
+ *            e.g. n = 6, num[] = {1, 2, 3, 2, 3, 1, $} ($ 代表一个小于字符集中任意字符的字符)
+ *            sa[]     1 到 n     为有效值
+ *            rank[]   0 到 n - 1 为有效值
+ *            height[] 2 到 n     为有效值
+ */
+namespace SuffixArray {
+    const int MAXL = 1e5 + 5;
+    int sa[MAXL];       // 排名为 i 的后缀的开始位置
+    int rank[MAXL];     // suffix(i) 的排名
+    int height[MAXL];   // LCP(suffix(sa[i]), suffix(sa[i - 1]))
+    int stMin[MAXL][31];
+    int t1[MAXL], t2[MAXL], c[MAXL];
+    int n, num[MAXL];
+    bool cmp(int r[], int a, int b, int l) {
+        return r[a] == r[b] && r[a + l] == r[b + l];
+    }
+    /**
+     * @param s 字符串
+     * @param n 字符串长度
+     * @param m 字符集大小 (最大字符应小于 m)
+     */
+    void da(int s[], int n, int m) {
+        s[n] = 0;
+        ++n;
+        int p, *x = t1, *y = t2;
+        for (int i = 0; i < m; ++i) c[i] = 0;
+        for (int i = 0; i < n; ++i) ++c[x[i] = s[i]];
+        for (int i = 1; i < m; ++i) c[i] += c[i - 1];
+        for (int i = n - 1; ~i; --i) sa[--c[x[i]]] = i;
+        for (int j = 1; j <= n; j <<= 1) {
+            p = 0;
+            for (int i = n - j; i < n; ++i) y[p++] = i;
+            for (int i = 0; i < n; ++i)
+                if (sa[i] >= j) y[p++] = sa[i] - j;
+            for (int i = 0; i < m; ++i) c[i] = 0;
+            for (int i = 0; i < n; ++i) ++c[x[y[i]]];
+            for (int i = 1; i < m; ++i) c[i] += c[i - 1];
+            for (int i = n - 1; ~i; --i) sa[--c[x[y[i]]]] = y[i];
+            swap(x, y);
+            p = 1;
+            x[sa[0]] = 0;
+            for (int i = 1; i < n; ++i)
+                x[sa[i]] = cmp(y, sa[i - 1], sa[i], j) ? p - 1 : p++;
+            if (p >= n) break;
+            m = p;
+        }
+        int k = 0;
+        --n;
+        for (int i = 0; i <= n; ++i) rank[sa[i]] = i;
+        for (int i = 0; i < n; ++i) {
+            if (k) --k;
+            int j = sa[rank[i] - 1];
+            while (s[i + k] == s[j + k]) ++k;
+            height[rank[i]] = k;
+        }
+    }
+    void initRMQ(int n) {
+        for (int i = 0; i < n; ++i)
+            stMin[i][0] = height[i];
+        for (int j = 1; (1 << j) < n; ++j)
+            for (int i = 0; i + (1 << j) - 1 < n; ++i)
+                stMin[i][j] = min(stMin[i][j - 1], stMin[i + (1 << (j - 1))][j - 1]);
+    }
+    int query(int l, int r) {
+        int k = floor(log2(r - l + 1));
+        return min(stMin[l][k], stMin[r - (1 << k) + 1][k]);
+    }
+    /**
+     * @return LCP(suffix(a), suffix(b))
+     */
+    int LCP(int a, int b) {
+        a = rank[a];
+        b = rank[b];
+        if (a > b) swap(a, b);
+        return height[query(a + 1, b)];
+    }
+}
+```
+
+## 后缀自动机
+
+### e.g. `aabbabd`
+
+> ![](D:\CODE\SAM.png)
+>
+> | 状态 | 子串                  | endpos          |
+> | :--: | :-------------------- | --------------- |
+> |  S   | 空串                  | {0,1,2,3,4,5,6} |
+> |  1   | a                     | {1,2,5}         |
+> |  2   | aa                    | {2}             |
+> |  3   | aab                   | {3}             |
+> |  4   | aabb,abb,bb           | {4}             |
+> |  5   | b                     | {3,4,6}         |
+> |  6   | aabba,abba,bba,ba     | {5}             |
+> |  7   | aabbab,abbab,bbab,bab | {6}             |
+> |  8   | ab                    | {3,6}           |
+
+### 模板
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+using LL = long long;
+/**
+ * 后缀自动机
+ *  sam[1] 表示初始状态 可认为是一个空串
+ *  后缀自动机中的一个状态表示的是一系列结尾位置相同的字符串
+ *  它们的结尾位置构成集合 endpos, 并且这些字符串的出现次数相同, 均为 cnt
+ *  len 表示这些字符串的长度的最大值
+ *  sam[p] 对应的 endpos 集合是 sam[p].fail 对应的 endpos 集合的子集
+ */
+namespace SAM {
+    const int CHAR = 26;        // 字符集大小
+    const int MAXL = 1e5 + 5;   // 字符串长度
+    class SAMNode {
+    public:
+        int fail;       // 失配后跳转到不等于自身的最长后缀
+        int len;        // 当前状态最长能接受的后缀长度
+        int pos;        // 当前 endpos 集合中最小的数
+                        // 即当前状态代表的后缀第一次出现时, 其结尾字符的位置
+        LL cnt;         // 当前状态能接受的后缀的出现次数
+        int next[CHAR]; // 当前状态代表的后缀后添加字符 c 后得到的后缀的状态
+        void clear() {
+            fail = len = pos = 0;
+            memset(next, 0, sizeof next);
+            cnt = 0;
+        }
+    }sam[MAXL << 1]; // 后缀自动机状态个数不超过 2 * MAXL 个
+    int last, root, num, ed[MAXL];
+    char s[MAXL];
+    int newNode(int len, int pos) {
+        int cur = ++num;
+        sam[cur].clear();
+        sam[cur].len = len;
+        sam[cur].pos = pos;
+        return cur;
+    }
+    void SAMInit() {
+        num = 0;
+        root = last = newNode(0, 0);
+    }
+    int extend(int last, int x) {
+        int p = last, np = newNode(sam[p].len + 1, sam[p].len + 1);
+        while (p && !sam[p].next[x]) {
+            sam[p].next[x] = np;
+            p = sam[p].fail;
+        }
+        if (!p)
+            sam[np].fail = root;
+        else {
+            int q = sam[p].next[x];
+            if (sam[q].len == sam[p].len + 1)
+                sam[np].fail = q;
+            else {
+                int nq = newNode(sam[p].len + 1, sam[p].pos);
+                memcpy(sam[nq].next, sam[q].next, sizeof sam[q].next);
+                sam[nq].fail = sam[q].fail;
+                sam[q].fail = sam[np].fail = nq;
+                while (p && sam[p].next[x] == q) {
+                    sam[p].next[x] = nq;
+                    p = sam[p].fail;
+                }
+            }
+        }
+        sam[np].cnt = 1;
+        return np;
+    }
+    void calc() {
+        static int deg[MAXL << 1];
+        memset(deg, 0, sizeof deg);
+        static queue<int> que;
+        while (!que.empty()) que.pop();
+        for (int i = 1; i <= num; ++i)
+            ++deg[sam[i].fail];
+        for (int i = 1; i <= num; ++i)
+            if (!deg[i]) que.push(i);
+        while (!que.empty()) {
+            int now = que.front();
+            que.pop();
+            int fail = sam[now].fail;
+            sam[fail].cnt += sam[now].cnt;
+            if (--deg[fail] == 0) que.push(fail);
+        }
+    }
+    void build() {
+        SAMInit();
+        scanf("%s", s + 1);
+        memset(ed, 0, sizeof ed);
+        ed[0] = root;
+        for (int i = 1; s[i]; ++i)
+            ed[i] = extend(ed[i - 1], s[i] - 'A');
+    }
+}
+```
+
+### 相关题目
+
+1. **子串出现次数**
+
+   > 在模式串T中查找子串P及其出现次数，建立T的后缀自动机，记录`cnt`表示当前状态的出现次数，如果当前结点新建得到，`cnt = 1`；如果当前结点拷贝得到，`cnt = 0`。
+   >  然后我们按照`fail`边的反向拓扑序，更新`cnt`变量，即：`sam[sam[p].fail].cnt += sam[p].cnt`。
+   >
+   > 然后对于子串，我们只需要在后缀自动机上跑出其对应状态结点p，然后查询`sam[p].cnt`即可。
+
+2. 
+
 # 图
 
 ## 拓扑排序
@@ -662,7 +950,7 @@ int main() {
  *        对于原序列 [1...n] 的每一个前缀 [1...i] 建立一棵线段树,
  *        第 i 棵线段树维护前缀 [1...i] 中属于 [L...R] 的数字的个数
  *
- * @brief 主席树解决静态区间第 K 大
+ * @brief 主席树解决静态区间第 K 小 ！！！
  *
  * @attention 注意数组大小, 20 - 50 倍 MAXN 即可
  *            对原序列进行离散化后再建树
@@ -713,7 +1001,7 @@ int main() {
     scanf("%d", &T);
     while (T--) {
         scanf("%d%d", &n, &q);
-        for (int i = 1; i <=n; ++i) scanf("%d", &a[i]), b[i] = a[i];
+        for (int i = 1; i <= n; ++i) scanf("%d", &a[i]), b[i] = a[i];
         sort(b + 1, b + n + 1);
         m = unique(b + 1, b + n + 1) - (b + 1);
         cnt = 0;
