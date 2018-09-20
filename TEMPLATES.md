@@ -50,7 +50,6 @@
 ## 快速幂
 
 ```c++
-typedef long long LL;
 /**
  * @return a ^ b % MOD
  */
@@ -74,10 +73,6 @@ LL quickPow(LL a, LL b, LL MOD) {
  * @attention 适用于 MOD 较大的情况
  *            e.g. MOD == 1e9 + 7 || MOD == 998244353
  */
-#include <bits/stdc++.h>
-typedef long long LL;
-const int MOD = 998244353;
-const int N = 3e5 + 5;
 LL fac[N + 10], invfac[N + 10];
 LL quickPow(LL a, LL b, LL MOD);
 void init() {
@@ -94,9 +89,6 @@ void init() {
 ### 杨辉三角
 
 ```c++
-typedef long long LL;
-const int MOD = 1e9 + 7;
-const int N = 1005;
 LL C[N + 10][N + 10];
 void init(int n) {
     C[0][0] = 1;
@@ -116,9 +108,6 @@ LL getC(int a, int b) {
 ### $ \dbinom n r = \dfrac{n!}{r!(n-r)!} $
 
 ```c++
-typedef long long LL;
-const int MOD = 998244353;
-const int N = 3e5 + 5;
 LL fac[N + 10];    // n!
 LL invfac[N + 10]; // (n!) ^ (-1)
 LL getC(LL a, LL b) {
@@ -133,8 +122,6 @@ LL getC(LL a, LL b) {
 /**
  * @attention 适用于 a, b < 1e18, MOD < 1e5 的情况
  */
-typedef long long LL;
-const int MOD = 1e5 + 7;
 LL getC(int a, int b);
 LL Lucas(LL a, LL b) {
     if(a < MOD && b < MOD) return getC(a, b);
@@ -162,9 +149,6 @@ $$
  * phi[p * i] = p * phi[i], p is prime && p % i == 0.
  * phi[p * i] = (p - 1) * phi[i], p is prime && p % i != 0.
  */
-#include <bits/stdc++.h>
-using namespace std;
-const int N = 100010;
 int phi[N + 5], prime[N + 5];
 bool isprime[N + 5];
 void init() {
@@ -221,9 +205,6 @@ void init() {
 
 ### 线性筛 $ \mu(d) $
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
-const int N = 100010;
 int mu[N + 5], prime[N + 5];
 bool isprime[N + 5];
 void Mobius() {
@@ -260,9 +241,6 @@ for (int i = 1; i <= n; i = last + 1) {
 ## 矩阵快速幂
 
 ```c++
-typedef long long LL;
-const int MAX = 150;
-LL MOD;
 class Matrix {
 public:
     int r, c;
@@ -344,8 +322,6 @@ void mergeSort(int a[], int tmp[], int l, int r, int &cnt) {
 ## 回文树
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
 /**
   * 回文树 / 回文自动机
   *  pt[0] 连接了长度为偶数的回文子串
@@ -416,8 +392,6 @@ namespace PalindromeTree {
 ## 后缀数组
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
 /**
  * @attention 注意数组有效值的下标范围
  *            待排序数组长度为 n, 放在 0 到 n - 1 中, 在最后补 0 (小于字符集中的任何一个字符)
@@ -521,9 +495,6 @@ namespace SuffixArray {
 ### 模板
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
-using LL = long long;
 /**
  * 后缀自动机
  *  sam[1] 表示初始状态 可认为是一个空串
@@ -621,7 +592,8 @@ namespace SAM {
 1. **子串出现次数**
 
    > 在模式串T中查找子串P及其出现次数，建立T的后缀自动机，记录`cnt`表示当前状态的出现次数，如果当前结点新建得到，`cnt = 1`；如果当前结点拷贝得到，`cnt = 0`。
-   >  然后我们按照`fail`边的反向拓扑序，更新`cnt`变量，即：`sam[sam[p].fail].cnt += sam[p].cnt`。
+   >
+   > 然后我们按照`fail`边的反向拓扑序，更新`cnt`变量，即：`sam[sam[p].fail].cnt += sam[p].cnt`。
    >
    > 然后对于子串，我们只需要在后缀自动机上跑出其对应状态结点p，然后查询`sam[p].cnt`即可。
 
@@ -632,12 +604,8 @@ namespace SAM {
 ## 拓扑排序
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
-const int MAXN = 1010;
-int n;                  // 点数
-int indeg[MAXN];        // 入度
-vector<int> edge[MAXN]; // 边集
+int n, indeg[MAXN];
+vector<int> edge[MAXN];
 queue<int> Q;
 /**
  * @brief 有向图拓扑排序判环
@@ -669,10 +637,6 @@ bool topoSort() {
 ## Tarjan - 强连通分量
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
-const int MAXN = 1010;
-const int MAXM = 10010;
 class CEdge {
 public:
     int x, next;
@@ -942,6 +906,39 @@ int main() {
 
 # 树
 
+## LCA
+
+```c++
+int depth[MAXN], ancestor[MAXN][25];
+vector<int> edge[MAXN];
+void dfs(int u, int fa, int d) {
+    depth[u] = d;
+    ancestor[u][0] = fa;
+    for (int i = 1; i < 25; ++i)
+        ancestor[u][i] = ancestor[ancestor[u][i - 1]][i - 1];
+    for (auto &v : edge[u]) {
+        if (v == fa) continue;
+        dfs(v, u, d + 1);
+    }
+}
+int LCA(int x, int y) {
+    if (depth[x] < depth[y])
+        swap(x, y);
+    for (int i = 24; ~i; --i)
+         if (depth[x] - (1 << i) >= depth[y])
+            x = ancestor[x][i];
+    if (x == y) return x;
+    for (int i = 24; ~i; --i)
+        if (ancestor[x][i] != ancestor[y][i]) {
+            x = ancestor[x][i];
+            y = ancestor[y][i];
+        }
+    return ancestor[x][0];
+}
+```
+
+
+
 ## 主席树
 
 ```c++
@@ -955,9 +952,6 @@ int main() {
  * @attention 注意数组大小, 20 - 50 倍 MAXN 即可
  *            对原序列进行离散化后再建树
  */
-#include <bits/stdc++.h>
-using namespace std;
-const int MAXN = 1e5 + 10;
 int n, q, m, cnt;
 int a[MAXN], b[MAXN], root[MAXN * 20], lson[MAXN * 20], rson[MAXN * 20], sum[MAXN * 20];
 void build(int& p, int l, int r) {
@@ -1017,7 +1011,6 @@ int main() {
 ## 笛卡尔树
 
 ```c++
-const int MAXN = 1e6 + 10;
 /**
  * 笛卡尔树满足如下两个性质
  *  1. 树中的元素满足二叉搜索树性质, 按照中序遍历得到的序列为原数组序列
@@ -1078,9 +1071,6 @@ int build(int n) {
  *
  * @attention 卡常数可以考虑预处理 2 ^ i 和 log()
  */
-#include <bits/stdc++.h>
-using namespace std;
-const int MAXN = 1e5 + 10;
 int stMin[MAXN][31], stMax[MAXN][31];
 void init(int n) {
     for(int j = 1; (1 << j) < n; ++j)
@@ -1103,7 +1093,6 @@ int query(int l, int r) {
 ## 快速读入
 
 ```c++
-#include <bits/stdc++.h>
 /**
  * @attention 只能用于读入整数
  *            不能和其他任何读入方法同时使用
@@ -1169,10 +1158,6 @@ int __builtin_clz (unsigned int x);     // 返回前导 '0' 的个数
 ## 线性递推式
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
-typedef long long LL;
-const LL MOD = 1e9 + 7;
 LL quickPow(LL a, LL b) {
     LL ret = 1LL;
     while (b) {
