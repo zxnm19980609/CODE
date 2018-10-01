@@ -10,6 +10,43 @@
 
 # 数论
 
+## 扩展欧几里得(EXGCD)
+
+```c++
+/**
+ * @brief a * x + b * y = c 的最小正整数解
+ *
+ * @attention c % gcd(a, b) != 0 无解
+ *            经过调整后得到的 x1 y1 为最小正整数解
+ *            x = x1 +(or -) bg, y = y1 -(or +) ag 也是原方程的一组解
+ */
+LL exGcd_x, exGcd_y, exGcd_d;
+void exGcd(LL a, LL b) {
+    if (b == 0) {
+        exGcd_x = 1;
+        exGcd_y = 0;
+        exGcd_d = a;
+    }
+    else {
+        exGcd(b, a % b);
+        LL tmp = exGcd_x;
+        exGcd_x = exGcd_y;
+        exGcd_y = tmp - a / b * exGcd_y;
+    }
+}
+void solve(LL a, LL b, LL c) {
+    LL gcd = __gcd(a, b);
+    if (c % gcd) return;
+    exGcd(a, b);
+    LL x1, y1, ag, bg;
+    ag = a / gcd;
+    bg = b / gcd;
+    x1 = (exGcd_x + bg) * (c / gcd);
+    x1 = (x1 % bg + bg) % bg;
+    y1 = (c - a * x1) / b;
+}
+```
+
 ## 概念 & 性质
 
 1. **积性函数：** $$ \forall p > 0, q > 0, gcd(p, q) == 1 \quad f(p \cdot q ) = f(p) \cdot f(q) $$
@@ -708,15 +745,10 @@ void build() {
                 G[belong[i]].push_back(belong[edge[p].x]);
 }
 int main() {
-    // freopen("in.txt", "r", stdin);
-    int T;
-    scanf("%d" ,&T);
-    while (T--) {
-        init();
-        for (int i = 1; i <= n; ++i)
-            if (!dfn[i]) tarjan(i);
-        build();
-    }
+    init();
+    for (int i = 1; i <= n; ++i)
+        if (!dfn[i]) tarjan(i);
+    build();
     return 0;
 }
 ```
@@ -730,51 +762,51 @@ int main() {
  * @attention 有向图反向边初始流量为 0
  *            无向图反向边初始流量为 w
  */
-#include <bits/stdc++.h>
-using namespace std;
-const int MAXN = 100010;
-const int MAXM = 100010;
-const int INF = 0x3F3F3F3F;
 class Edge {
 public:
-    int x, w, next;
+    int to, cap, next;
 }edge[MAXM << 1];
-int n, m, cnt, S, T, MEMORY_SIZE;
+int n, N, m, cnt, St, Ed, MEMORY_SIZE;
 int h[MAXN], cur[MAXN], dis[MAXN];
-queue<int> Q;
-void addEdge(int u, int v, int w) {
-    edge[cnt].x = v;
-    edge[cnt].w = w;
+int front, tail, que[MAXN];
+void addEdge(int u, int v, int w, int rw = 0) {
+    edge[cnt].to = v;
+    edge[cnt].cap = w;
+    edge[cnt].next = h[u];
+    h[u] = cnt++;
+    swap(u, v);
+    edge[cnt].to = v;
+    edge[cnt].cap = rw;
     edge[cnt].next = h[u];
     h[u] = cnt++;
 }
 bool bfs(int s, int t) {
     int u, v;
     memset(dis, -1, MEMORY_SIZE);
-    Q.push(s);
+    front = tail = 0;
+    que[tail++] = s;
     dis[s] = 0;
-    while (!Q.empty()) {
-        u = Q.front();
-        Q.pop();
+    while (front < tail) {
+        u = que[front++];
         for (int p = h[u]; ~p; p = edge[p].next) {
-            v = edge[p].x;
-            if (dis[v] == -1 && edge[p].w) {
+            v = edge[p].to;
+            if (dis[v] == -1 && edge[p].cap) {
                 dis[v] = dis[u] + 1;
-                Q.push(v);
-                if (v == t) break;
+                if (v == t) return true;
+                que[tail++] = v;
             }
         }
     }
-    return dis[t] != -1;
+    return false;
 }
 int dfs(int u, int t, int cap) {
     if (u == t || cap == 0) return cap;
     int res = 0, flow;
     for (int &p = cur[u]; ~p; p = edge[p].next) {
-        int v = edge[p].x;
-        if (dis[v] == dis[u] + 1 && (flow = dfs(v, t, min(cap - res, edge[p].w))) > 0) {
-            edge[p].w -= flow;
-            edge[p ^ 1].w += flow;
+        int v = edge[p].to;
+        if (dis[v] == dis[u] + 1 && (flow = dfs(v, t, min(cap - res, edge[p].cap) > 0))) {
+            edge[p].cap -= flow;
+            edge[p ^ 1].cap += flow;
             res += flow;
             if (res == cap) return cap;
         }
@@ -795,16 +827,16 @@ int main() {
     int _;
     for (scanf("%d", &_); _; --_) {
         scanf("%d%d", &n, &m);
-		scanf("%d%d", &S, &T);
-        MEMORY_SIZE = (n + 1) * sizeof(int);
+		scanf("%d%d", &St, &Ed);
+        N = n;
+        MEMORY_SIZE = (N + 1) * sizeof(int);
         cnt = 0;
         memset(h, -1, MEMORY_SIZE);
         for (int u, v, w, i = 0; i < m; ++i) {
             scanf("%d%d%d", &u, &v, &w);
-            addEdge(u, v, w);
-            addEdge(v, u, w);
+            addEdge(u, v, w, w);
         }
-        printf("%d\n", dinic(S, T));
+        printf("%d\n", dinic(St, Ed));
     }
     return 0;
 }
@@ -813,11 +845,6 @@ int main() {
 ### 最小费用最大流
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
-const int MAXN = 100005;
-const int MAXE = 1000005;
-const int INF = 0x3F3F3F3F;
 class Edge {
 public:
     int to, next, cap, flow, cost;
@@ -884,7 +911,6 @@ int MCMF(int &cost) {
     return flow;
 }
 int main() {
-    // freopen("in.txt", "r", stdin);
     scanf("%d%d", &n, &m);
     cnt = 0;
     MEMORY_SIZE = (n + 1) * sizeof(int);
@@ -901,8 +927,6 @@ int main() {
     return 0;
 }
 ```
-
-
 
 # 树
 
@@ -936,8 +960,6 @@ int LCA(int x, int y) {
     return ancestor[x][0];
 }
 ```
-
-
 
 ## 主席树
 
@@ -990,20 +1012,15 @@ inline void solve() {
     printf("%d\n", b[ans]);
 }
 int main() {
-    // freopen("in.txt", "r", stdin);
-    int T;
-    scanf("%d", &T);
-    while (T--) {
-        scanf("%d%d", &n, &q);
-        for (int i = 1; i <= n; ++i) scanf("%d", &a[i]), b[i] = a[i];
-        sort(b + 1, b + n + 1);
-        m = unique(b + 1, b + n + 1) - (b + 1);
-        cnt = 0;
-        build(root[0], 1, m);
-        for (int i = 1; i <= n; ++i) a[i] = lower_bound(b + 1, b + m + 1, a[i]) - b;
-        for (int i = 1; i <= n; ++i) update(root[i], 1, m, root[i - 1], a[i]);
-        while (q--) solve();
-    }
+    scanf("%d%d", &n, &q);
+    for (int i = 1; i <= n; ++i) scanf("%d", &a[i]), b[i] = a[i];
+    sort(b + 1, b + n + 1);
+    m = unique(b + 1, b + n + 1) - (b + 1);
+    cnt = 0;
+    build(root[0], 1, m);
+    for (int i = 1; i <= n; ++i) a[i] = lower_bound(b + 1, b + m + 1, a[i]) - b;
+    for (int i = 1; i <= n; ++i) update(root[i], 1, m, root[i - 1], a[i]);
+    while (q--) solve();
     return 0;
 }
 ```
@@ -1070,11 +1087,12 @@ int build(int n) {
  *        stMin[i][0] = a[i]
  *
  * @attention 卡常数可以考虑预处理 2 ^ i 和 log()
+ *            维护区间的范围: [1...n]
  */
 int stMin[MAXN][31], stMax[MAXN][31];
 void init(int n) {
     for(int j = 1; (1 << j) < n; ++j)
-        for(int i = 0; i + (1 << j) - 1 < n; ++i) {
+        for(int i = 1; i + (1 << j) - 1 <= n; ++i) {
             stMin[i][j] = min(stMin[i][j - 1], stMin[i + (1 << (j - 1))][j - 1]);
             // stMax[i][j] = max(stMax[i][j - 1], stMax[i + (1 << (j - 1))][j - 1]);
         }
@@ -1085,8 +1103,6 @@ int query(int l, int r) {
     // return max(stMax[l][k], stMax[r - (1 << k) + 1][k]);
 }
 ```
-
-
 
 # 杂项
 
