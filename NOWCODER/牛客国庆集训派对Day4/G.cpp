@@ -7,15 +7,26 @@ LL a[MAXN], w[MAXN];
 int main() {
     int n;
     scanf("%d", &n);
-    for (int i = 1; i <= n; ++i)
-        scanf("%lld", &a[i]);
     for (int i = 1; i <= n; ++i) {
-        scanf("%lld", &w[i]);
-        w[i] = (w[i] + w[i - 1]) % MOD;
+        scanf("%lld", &a[i]);
+        a[i] += a[i - 1];
     }
-    LL ans = 0;
     for (int i = 1; i <= n; ++i)
-        ans = (ans + a[i] * (w[n - i + 1] + w[i] - w[1]) % MOD) % MOD;
+        scanf("%lld", &w[i]);
+    int l = 1, r = n, m = n >> 1;
+    LL tmp = 0, ans = 0;
+    for (int i = 1; i <= m; ++i)
+        w[i] += w[n - i + 1];
+    for (int i = 1; i <= m; ++i) {
+        tmp = (tmp + a[r] - a[l - 1]) % MOD;
+        ans = (ans + w[i] * tmp % MOD) % MOD;
+        ++l;
+        --r;
+    }
+    if (n & 1) {
+        tmp = (tmp + a[r] - a[l - 1]) % MOD;
+        ans = (ans + w[m + 1] * tmp % MOD) % MOD;
+    }
     printf("%lld\n", ans);
     return 0;
 }
