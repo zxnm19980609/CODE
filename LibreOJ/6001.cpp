@@ -1,3 +1,5 @@
+
+
 #include <bits/stdc++.h>
 using namespace std;
 const int MAX = 55;
@@ -6,9 +8,11 @@ class Edge {
 public:
     int to, cap, next;
 }edge[(MAX * MAX) << 2];
-int n, m, St, Ed, expr[MAX], need[MAX][MAX];
-int n, m, cnt, h[MAX << 1], cur[MAX << 1], dis[MAX << 1];
+int n, m, St, Ed, expr[MAX], inst[MAX], need[MAX][MAX];
+int cnt, h[MAX << 1], cur[MAX << 1], dis[MAX << 1];
 int front, tail, que[MAX << 1];
+bool selectE[MAX], selectI[MAX];
+char s[10005];
 void addEdge(int u, int v, int w, int rw = 0) {
     edge[cnt].to = v;
     edge[cnt].cap = w;
@@ -62,13 +66,43 @@ int dinic(int s, int t) {
     }
     return ans;
 }
+void print(int ans) {
+    for (int i = 1; i <= m; ++i)
+        if (~dis[i]) selectE[i] = true;
+    for (int i = 1; i <= m; ++i)
+        if (selectE[i]) {
+            for (int j = 1; j <= n; ++j)
+                if (need[i][j])
+                    selectI[j] = true;
+        }
+    bool flag = false;
+    for (int i = 1; i <= m; ++i)
+        if (selectE[i]) {
+            if (flag)
+                putchar(' ');
+            else
+                flag = true;
+            printf("%d", i);
+        }
+    putchar('\n');
+    flag = false;
+    for (int i = 1; i <= n; ++i)
+        if (selectI[i]) {
+            if (flag)
+                putchar(' ');
+            else
+                flag = true;
+            printf("%d", i);
+        }
+    putchar('\n');
+    printf("%d\n", ans);
+}
 int main() {
-    freopen("in.txt", "r", stdin);
-    cin >> m >> n;
-    string s;
-    stringstream ss;
+    scanf(" %d %d ", &m, &n);
+    memset(h, -1, sizeof h);
     for (int t, i = 1; i <= m; ++i) {
-        cin >> s;
+        gets(s);
+        stringstream ss;
         ss << s;
         ss >> expr[i];
         while (ss >> t) {
@@ -76,8 +110,17 @@ int main() {
             need[i][t] = true;
         }
     }
+    for (int i = 1; i <= n; ++i)
+        cin >> inst[i];
     St = n + m + 1;
     Ed = n + m + 2;
-    dinic(St, Ed);
+    for (int i = 1; i <= m; ++i)
+        addEdge(St, i, expr[i]);
+    for (int i = 1; i <= n; ++i)
+        addEdge(m + i, Ed, inst[i]);
+    int ans = -dinic(St, Ed);
+    for (int i = 1; i <= m; ++i)
+       ans += expr[i];
+    print(ans);
     return 0;
 }
