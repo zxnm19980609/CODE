@@ -216,7 +216,7 @@ void init() {
 
 1. **莫比乌斯反演定理：**
 
-   > $$ F(n) $$ 和 $$ f(n) $$ 是定义在非负整数集合上的两个函数，并且满足条件： 
+   > $$ F(n) $$ 和 $$ f(n) $$ 是定义在非负整数集合上的两个函数，并且满足条件：
    > $$
    > F(n) = \sum \limits_{d \mid n} f(d)
    > $$
@@ -238,7 +238,7 @@ void init() {
 
 2. $$ \sum \limits_{d \mid n} \mu(d) = \left[ n = 1 \right]$$
 
-3. $$ \sum \limits_{d \mid n} \dfrac{\mu(d)}{d} = \dfrac{\varphi(n)}{n} $$ 
+3. $$ \sum \limits_{d \mid n} \dfrac{\mu(d)}{d} = \dfrac{\varphi(n)}{n} $$
 
 ### 线性筛 $ \mu(d) $
 ```c++
@@ -634,7 +634,7 @@ namespace SAM {
    >
    > 然后对于子串，我们只需要在后缀自动机上跑出其对应状态结点p，然后查询`sam[p].cnt`即可。
 
-2. 
+2.
 
 # 图
 
@@ -823,7 +823,6 @@ int dinic(int s, int t) {
     return ans;
 }
 int main() {
-    // freopen("in.txt", "r", stdin);
     int _;
     for (scanf("%d", &_); _; --_) {
         scanf("%d%d", &n, &m);
