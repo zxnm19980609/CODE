@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
+const int dx[] = {0, 0, 1, -1};
+const int dy[] = {1, -1, 0, 0};
 const int MAXN = 1e3 + 5;
 const int MAXM = 1e5 + 5;
 const int INF = 0x3F3F3F3F;
@@ -7,27 +9,10 @@ class Edge {
 public:
     int to, cap, next;
 }edge[MAXM << 1];
-int n, a[MAXN], b[MAXN], dp[MAXN];
+int n, m, val[35][35], sum;
 int cnt, St, Ed;
 int h[MAXN], cur[MAXN], dis[MAXN];
 int front, tail, que[MAXN];
-int LIS() {
-    int pos, len = 1;
-    b[1] = a[1];
-    dp[1] = 1;
-    for (int i = 2; i <= n; ++i) {
-        if (a[i] >= b[len]) {
-            b[++len] = a[i];
-            dp[i] = len;
-        }
-        else {
-            pos = upper_bound(b + 1, b + len + 1, a[i]) - b;
-            b[pos] = a[i];
-            dp[i] = pos;
-        }
-    }
-    return len;
-}
 void addEdge(int u, int v, int w, int rw = 0) {
     edge[cnt].to = v;
     edge[cnt].cap = w;
@@ -81,33 +66,37 @@ int dinic(int s, int t) {
     }
     return ans;
 }
+int getIndex(int x, int y) {
+    return (x - 1) * m + y;
+}
+bool valid(int x, int y) {
+    return x && x <= n && y && y <= m;
+}
 int main() {
     // freopen("in.txt", "r", stdin);
-    scanf("%d", &n);
-    for (int i = 1; i <= n ; ++i)
-        scanf("%d", &a[i]);
-    int ans = LIS();
-    printf("%d\n", ans);
-    if (ans == 1) {
-        printf("%d\n%d\n", n, n);
-        return 0;
-    }
-    St = (n << 1) + 1;
-    Ed = (n << 1) + 2;
-    memset(h, -1, sizeof h);
-    for (int i = 1; i <= n; ++i) {
-        addEdge(i, n + i, 1);
-        if (dp[i] == 1) addEdge(St, i, INF);
-        if (dp[i] == ans) addEdge(n + i, Ed, INF);
-        for (int j = i + 1; j <= n; ++j)
-            if (dp[j] == dp[i] + 1 && a[j] >= a[i])
-                addEdge(n + i, j, 1);
-    }
-    int flow = dinic(St, Ed);
-    printf("%d\n", flow);
+    scanf("%d%d", &n, &m);
     for (int i = 1; i <= n; ++i)
-        addEdge(i, n + i, INF);
-    flow += dinic(St, Ed);
-    printf("%d\n", flow);
+        for (int j = 1; j <= m; ++j) {
+            scanf("%d", &val[i][j]);
+            sum += val[i][j];
+        }
+    St = n * m + 1;
+    Ed = n * m + 2;
+    memset(h, -1, sizeof h);
+    for (int x = 1; x <= n; ++x)
+        for (int y = 1; y <= m; ++y)
+            if ((x + y) & 1) {
+                addEdge(St, getIndex(x, y), val[x][y]);
+                for (int k = 0; k < 4; ++k) {
+                    int nx = x + dx[k];
+                    int ny = y + dy[k];
+                    if (valid(nx, ny))
+                        addEdge(getIndex(x, y), getIndex(nx, ny), INF);
+                }
+            }
+            else
+                addEdge(getIndex(x, y), Ed, val[x][y]);
+    int ans = sum - dinic(St, Ed);
+    printf("%d\n", ans);
     return 0;
 }
