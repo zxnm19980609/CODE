@@ -70,7 +70,7 @@ int MCMF(int &cost) {
     return flow;
 }
 int main() {
-    freopen("in.txt", "r", stdin);
+    // freopen("in.txt", "r", stdin);
     scanf("%d%d%d%d%d%d", &n, &P, &M, &F, &N, &S);
     for (int i = 1; i <= n; ++i)
         scanf("%d", &need[i]);
@@ -79,17 +79,14 @@ int main() {
     memset(h, -1, sizeof h);
     for (int i = 1; i <= n; ++i) {
         addEdge(St, i, INF, P);
-        addEdge(n + i, Ed, INF, 0);
+        addEdge(St, n + i, need[i], 0);
+        addEdge(i, Ed, need[i], 0);
+        if (i + 1 <= n) addEdge(n + i, n + i + 1, INF, 0);
+        if (i + M <= n) addEdge(n + i, i + M, INF, F);
+        if (i + N <= n) addEdge(n + i, i + N, INF, S);
     }
-    for (int i = 1; i <= n; ++i) {
-        addEdge(i, n + i, need[i], 0);
-        for (int j = i + M; j <= n && j < i + N; ++j)
-            addEdge(n + i, j, INF, F);
-        for (int j = i + N; j <= n; ++j)
-            addEdge(n + i, j, INF, S);
-    }
-    int flow, cost;
-    flow = MCMF(cost);
-    printf("%d\n%d\n", flow, cost);
+    int cost;
+    MCMF(cost);
+    printf("%d\n", cost);
     return 0;
 }
